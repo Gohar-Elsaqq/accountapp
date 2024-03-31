@@ -121,15 +121,15 @@ public class ApartmentValidation {
             Apartment existingApartment = optionalApartment
                     .orElseThrow(() -> new ApartmentValidationException("Apartment not found for code: " + apartmentCode));
 
-            // This sentence means "Updating purchaseAmount based on the value sent or the stored value.
-            double purchaseAmount = (newPurchaseApartment != null) ? newPurchaseApartment : existingApartment.getPurchaseApartment();
-            //update apratment
+            double purchaseAmount = (newPurchaseApartment != null && newPurchaseApartment != 0) ? newPurchaseApartment : existingApartment.getPurchaseApartment();
             existingApartment.setPurchaseApartment(purchaseAmount);
+
             Double expenses = existingApartment.getExpenses();
             existingApartment.setTotalcost(null);
             existingApartment.setAmountApartmentSale(newAmountApartmentSale);
             existingApartment.setNetOfApartment(null);
-            if (existingApartment.getPurchaseApartment() != null && existingApartment.getExpenses() != null) {
+
+            if (purchaseAmount != 0 && expenses != null) {
                 double totalCost = purchaseAmount + expenses;
                 existingApartment.setTotalcost(totalCost);
                 if (newAmountApartmentSale != null) {
@@ -139,12 +139,40 @@ public class ApartmentValidation {
                 apartmentDOA.save(existingApartment);
                 log.info("Successfully performed calculations and updated values for Apartment: " + existingApartment.getApartmentCode());
             } else {
-                throw new ApartmentValidationException("One or more required values are null for Apartment: " + apartmentCode);
+                throw new ApartmentValidationException("One or more required values are null or zero for Apartment: " + apartmentCode);
             }
         } catch (Exception e) {
             throw new ApartmentValidationException("An error occurred while performing calculations and updating values: " + e.getMessage());
         }
     }
+
+//    public void performCalculationsAndSave(String apartmentCode, Double newPurchaseApartment, Double newAmountApartmentSale) throws ApartmentValidationException {
+//        try {
+//            Optional<Apartment> optionalApartment = apartmentDOA.findByApartmentCode(apartmentCode);
+//            Apartment existingApartment = optionalApartment
+//                    .orElseThrow(() -> new ApartmentValidationException("Apartment not found for code: " + apartmentCode));
+//            double purchaseAmount = (newPurchaseApartment != null) ? newPurchaseApartment : existingApartment.getPurchaseApartment();
+//            existingApartment.setPurchaseApartment(purchaseAmount);
+//            Double expenses = existingApartment.getExpenses();
+//            existingApartment.setTotalcost(null);
+//            existingApartment.setAmountApartmentSale(newAmountApartmentSale);
+//            existingApartment.setNetOfApartment(null);
+//            if (existingApartment.getPurchaseApartment() != null && existingApartment.getExpenses() != null) {
+//                double totalCost = purchaseAmount + expenses;
+//                existingApartment.setTotalcost(totalCost);
+//                if (newAmountApartmentSale != null) {
+//                    double netOfApartment = newAmountApartmentSale - totalCost;
+//                    existingApartment.setNetOfApartment(netOfApartment);
+//                }
+//                apartmentDOA.save(existingApartment);
+//                log.info("Successfully performed calculations and updated values for Apartment: " + existingApartment.getApartmentCode());
+//            } else {
+//                throw new ApartmentValidationException("One or more required values are null for Apartment: " + apartmentCode);
+//            }
+//        } catch (Exception e) {
+//            throw new ApartmentValidationException("An error occurred while performing calculations and updating values: " + e.getMessage());
+//        }
+//    }
 
 
 }

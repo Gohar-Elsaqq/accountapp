@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DetailsApartmentDAO extends JpaRepository<DetailsApartment,Integer> {
 
-    @Query(value = "SELECT MAX(da.totalcost) FROM details_apartment da WHERE da.apartment_id = (SELECT id FROM apartment WHERE apartment_code = :apartmentCode)", nativeQuery = true)
+    @Query(value = "SELECT MAX(da.totalcost) FROM postgres.account.details_apartment da WHERE da.apartment_id = (SELECT id FROM postgres.account.apartment WHERE apartment_code = :apartmentCode)", nativeQuery = true)
     Double findMaxTotalCostByApartmentCode(String apartmentCode);
 
 }

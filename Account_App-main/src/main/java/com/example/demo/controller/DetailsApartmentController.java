@@ -24,7 +24,7 @@ public class DetailsApartmentController extends BaseController {
                                                   @RequestParam(value = "lookupType") String lookupType) throws Exception {
         log.info("Start saveDetailsApartment add >: ");
         try {
-            log.info("Please enter saveDetailsApartment "+apartmentCode+"^__^"+lookupType);
+            log.info("Please enter saveDetailsApartment "+apartmentCode+"^_^"+lookupType);
              detailsApartmentService.save(detailsApartment,apartmentCode,lookupType);
             return success(new Utility("Details Apartment", BaseService.SUCCESS));
         } catch (Exception exception) {

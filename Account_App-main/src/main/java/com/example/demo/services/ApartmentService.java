@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.configuration.ApartmentValidationException;
 import com.example.demo.configuration.BaseService;
+import com.example.demo.configuration.Utility;
 import com.example.demo.dao.ApartmentJpaDOA;
 import com.example.demo.dto.ApartmentDto;
 import com.example.demo.entity.Apartment;
@@ -34,19 +35,16 @@ public class ApartmentService extends BaseService {
             apartmentValidation.setApartmentDefaults(apartment);
             log.info("this is save apartment");
             apartmentDOA.save(apartment);
-
             return "this is save apartment";
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
     }
-    public String updateApartments(@RequestBody ApartmentDto apartmentDto)throws Exception {
+    public void updateApartments(@RequestBody ApartmentDto apartmentDto)throws Exception {
         try {
             log.info("Enter api to update Apartments ");
             apartmentUpdater.updateApartments(apartmentDto);
             log.info("this is save apartment");
-                return "done";
-//            return Utility.getGson().toJson(new Utility("updateApartments", SUCCESS));
         } catch (Exception exception) {
             throw new Exception(exception.getMessage());
         }
@@ -54,11 +52,9 @@ public class ApartmentService extends BaseService {
     public Apartment getApartment(String apartmentCode) throws Exception {
         log.info("Start getApartment >>>>: get Apartment by code  and status :)> ");
         try {
-
         return   apartmentValidation.validateApartmentCode(apartmentCode);
         } catch (Exception e) {
             throw new ApartmentValidationException(e.getMessage());
-
         }
     }
     public List<Apartment> findAllApartment() throws Exception {

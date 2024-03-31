@@ -23,18 +23,14 @@ public class ApartmentUpdater {
             Optional<Apartment> optionalApartment = apartmentDOA.findByApartmentCode(apartmentDto.getApartmentCode());
             if (optionalApartment.isPresent()) {
                 Apartment existingApartment = optionalApartment.get();
-                if (!apartmentDto.getNewApartmentCode().isEmpty() && !"false".equals(apartmentDto.getNewApartmentCode())) {
-                    existingApartment.setApartmentCode(apartmentDto.getNewApartmentCode());
-                } else {
-                    existingApartment.setApartmentCode(apartmentDto.getApartmentCode());
-                }
+                existingApartment.setApartmentCode(apartmentDto.getApartmentCode());
                 existingApartment.setComments(apartmentDto.getComments());
                 existingApartment.setLocationApartment(apartmentDto.getLocationApartment());
                 existingApartment.setPurchaseApartment(apartmentDto.getPurchaseApartment());
                 existingApartment.setExpenses(apartmentDto.getExpenses());
                 existingApartment.setAmountApartmentSale(apartmentDto.getAmountApartmentSale());
-               apartmentDOA.save(existingApartment);
-                Utility.getGson().toJson(new Utility("apartment update", BaseService.SUCCESS));
+                apartmentDOA.save(existingApartment);
+//                Utility.getGson().toJson(new Utility("apartment update", BaseService.SUCCESS));
             } else {
                 throw new ApartmentValidationException("Invalid apartment code ");
             }

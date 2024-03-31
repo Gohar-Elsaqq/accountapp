@@ -37,8 +37,8 @@ public class ApartmentController extends BaseController {
         log.info("Rest api to updateApartments ");
         try {
             log.debug("start updateApartments : > >"+ apartmentDto.getApartmentCode());
-            var response =apartmentService.updateApartments(apartmentDto);
-            return success(new Utility("apartment", BaseService.SUCCESS)+response);
+            apartmentService.updateApartments(apartmentDto);
+            return success(new Utility("apartment", BaseService.SUCCESS));
         }catch (Exception exception) {
             return wrapException(exception,exception.getMessage());
         }

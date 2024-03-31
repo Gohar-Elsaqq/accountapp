@@ -27,8 +27,9 @@ public class Apartment extends BaseEntity {
     @Size(min = 1, message = "Please enter a valid Apartment code, it must have at least 1 character")
     private String apartmentCode;
 
-    @Column(name = "newApartmentCode")
-    private String newApartmentCode;
+//    @Column(name = "newApartmentCode")
+//    private String newApartmentCode;
+
     //مكان الشقه
     @Column(name = "locationApartment")
     private String locationApartment;
@@ -63,7 +64,8 @@ public class Apartment extends BaseEntity {
     private String status;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "apartment", fetch = FetchType.LAZY)
+//    @OneToMany(mappedBy = "apartment", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "apartment", fetch = FetchType.EAGER)
     @ToString.Exclude
     private List<DetailsApartment> detailsApartments;
 
