@@ -2,7 +2,6 @@ package com.example.demo.vaildation;
 
 import com.example.demo.configuration.ApartmentValidationException;
 import com.example.demo.dao.ApartmentJpaDOA;
-import com.example.demo.dao.DetailsApartmentDAO;
 import com.example.demo.dto.ApartmentDto;
 import com.example.demo.entity.Apartment;
 import com.example.demo.enums.Status;
@@ -12,29 +11,20 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.Optional;
-
 @Component
 @CommonsLog
 public class ApartmentValidation {
     @Autowired
     private ApartmentJpaDOA apartmentDOA;
-    @Autowired
-    private DetailsApartmentDAO detailsApartmentRepository;
     private final ModelMapper modelMapper = new ModelMapper();
     public void validateApartmentForSave(ApartmentDto apartmentDto) throws Exception {
+        log.info("Validation for save model");
         validateApartmentDto(apartmentDto);
         String apartmentCode = apartmentDto.getApartmentCode();
         checkIfApartmentExists(apartmentCode);
     }
     public void validateApartmentDto(ApartmentDto apartmentDto) throws Exception {
-
         if(apartmentDto ==null ){
             throw new ApartmentValidationException("Invalid apartment");
         }
@@ -46,11 +36,6 @@ public class ApartmentValidation {
         if (locationApartment == null || locationApartment.isEmpty()) {
             throw new ApartmentValidationException("Invalid or empty  location Apartment");
         }
-
-        double purchaseApartment = apartmentDto.getPurchaseApartment();
-        if (purchaseApartment <= 0) {
-            throw new ApartmentValidationException("Invalid or empty purchase Apartment");
-        }
     }
     public void checkIfApartmentExists(String apartmentCode) throws ApartmentValidationException {
         if (apartmentDOA.findByApartmentCode(apartmentCode).isPresent()) {
@@ -60,14 +45,6 @@ public class ApartmentValidation {
     public Apartment mapDtoToEntity(ApartmentDto apartmentDto) {
         return modelMapper.map(apartmentDto, Apartment.class);
     }
-    /**
-     * Sets default values for the given {@link Apartment} object.
-     * This method initializes the purchase date to the current date,
-     * sets the status to "ACT" (Active), and sets another property
-     * (e.g., propertyName) to a specific default value.
-     *
-     * @param apartment The {@link Apartment} object for which default values will be set.
-     */
     public void setApartmentDefaults(Apartment apartment) {
         apartment.setStatus(String.valueOf(Status.ACT));
     }
@@ -97,54 +74,43 @@ public class ApartmentValidation {
         apartmentDOA.save(existingApartment);
     }
     @Transactional
-    public void updateExpensesForApartment(String apartmentCode, Double newExpenses) throws ApartmentValidationException {
+    public void updateExpensesForApartment(String apartmentCode, double newExpenses) throws ApartmentValidationException {
         try {
-            // find by id Apartment
+            log.info("start updating");
             Optional<Apartment> optionalApartment = apartmentDOA.findByApartmentCode(apartmentCode);
             if (optionalApartment.isPresent()) {
                 Apartment apartment = optionalApartment.get();
-                apartment.setExpenses(newExpenses);
-                double totalCost = apartment.getPurchaseApartment() + newExpenses;
-                apartment.setTotalcost(totalCost);
-                apartmentDOA.save(apartment);
-                log.info("Successfully updated expenses for Apartment: " + apartmentCode);
-            } else {
-                throw new ApartmentValidationException("Apartment not found for code: " + apartmentCode);
-            }
+                    apartment.setExpenses(newExpenses);
+                    double totalCost = apartment.getPurchaseApartment() + newExpenses;
+                    apartment.setTotalCost(totalCost);
+                    apartmentDOA.save(apartment);
+                }
+            log.info("Successfully updated expenses for Apartment: " + apartmentCode);
         } catch (Exception e) {
             throw new ApartmentValidationException("An error occurred while updating expenses: " + e.getMessage());
         }
     }
-    public void performCalculationsAndSave(String apartmentCode, Double newPurchaseApartment, Double newAmountApartmentSale) throws ApartmentValidationException {
+    public void performCalculationsAndSave(String apartmentCode, double newPurchaseApartment, double newAmountApartmentSale) throws ApartmentValidationException {
         try {
+            log.info("Calculations and save");
             Optional<Apartment> optionalApartment = apartmentDOA.findByApartmentCode(apartmentCode);
-            Apartment existingApartment = optionalApartment
-                    .orElseThrow(() -> new ApartmentValidationException("Apartment not found for code: " + apartmentCode));
-
-            // This sentence means "Updating purchaseAmount based on the value sent or the stored value.
-            double purchaseAmount = (newPurchaseApartment != null) ? newPurchaseApartment : existingApartment.getPurchaseApartment();
-            //update apratment
+            Apartment existingApartment = optionalApartment.orElseThrow(() -> new ApartmentValidationException("Apartment not found for code: " + apartmentCode));
+            double purchaseAmount = (newPurchaseApartment != 0) ? newPurchaseApartment :(existingApartment.getPurchaseApartment());
             existingApartment.setPurchaseApartment(purchaseAmount);
-            Double expenses = existingApartment.getExpenses();
-            existingApartment.setTotalcost(null);
+            double expenses = existingApartment.getExpenses();
             existingApartment.setAmountApartmentSale(newAmountApartmentSale);
-            existingApartment.setNetOfApartment(null);
-            if (existingApartment.getPurchaseApartment() != null && existingApartment.getExpenses() != null) {
+            if (purchaseAmount != 0 && expenses != 0) {
                 double totalCost = purchaseAmount + expenses;
-                existingApartment.setTotalcost(totalCost);
-                if (newAmountApartmentSale != null) {
+                existingApartment.setTotalCost(totalCost);
+                if (newAmountApartmentSale != 0) {
                     double netOfApartment = newAmountApartmentSale - totalCost;
                     existingApartment.setNetOfApartment(netOfApartment);
                 }
                 apartmentDOA.save(existingApartment);
                 log.info("Successfully performed calculations and updated values for Apartment: " + existingApartment.getApartmentCode());
-            } else {
-                throw new ApartmentValidationException("One or more required values are null for Apartment: " + apartmentCode);
             }
         } catch (Exception e) {
             throw new ApartmentValidationException("An error occurred while performing calculations and updating values: " + e.getMessage());
         }
     }
-
-
 }

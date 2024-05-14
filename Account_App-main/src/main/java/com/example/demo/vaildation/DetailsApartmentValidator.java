@@ -1,7 +1,6 @@
 package com.example.demo.vaildation;
 
 import com.example.demo.dao.ActApartmentsViewDOA;
-import com.example.demo.dao.ApartmentJpaDOA;
 import com.example.demo.dao.DetailsApartmentDAO;
 import com.example.demo.entity.ActApartmentsView;
 import com.example.demo.entity.Apartment;
@@ -27,8 +26,6 @@ public class DetailsApartmentValidator {
     @Autowired
     private ActApartmentsViewDOA actApartmentsViewDOA;
     @Autowired
-    private ApartmentJpaDOA apartmentDOA;
-    @Autowired
     private ApartmentValidation apartmentValidation;
     @Autowired
     private DetailsApartmentDAO detailsApartmentDAO;
@@ -50,18 +47,16 @@ public class DetailsApartmentValidator {
     }
 
     private void validateBooleanFields(DetailsApartment detailsApartment) throws Exception {
-        boolean atLeastOneTrue = detailsApartment.isFinishing() || detailsApartment.isEstablishing();
-        boolean bothEstablishingAndFinishing = detailsApartment.isEstablishing() && detailsApartment.isFinishing();
+        boolean atLeastOneTrue = detailsApartment.getEstablishing() || detailsApartment.getFinishing();
+        boolean bothEstablishingAndFinishing = detailsApartment.getEstablishing() && detailsApartment.getFinishing();
 
         if (!atLeastOneTrue) {
             throw new Exception("At least one boolean field must be true");
         } else if (bothEstablishingAndFinishing) {
             throw new Exception("Please select only one of Establishing or Finishing");
         }
-//        if (detailsApartment.getAmount() == null || detailsApartment.getAmount().isEmpty()) {
-//            throw new Exception("Please enter amount");
-//        }
     }
+
 
 
 

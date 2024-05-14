@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 @Getter
 @Setter
@@ -27,34 +28,34 @@ public class Apartment extends BaseEntity {
     @Size(min = 1, message = "Please enter a valid Apartment code, it must have at least 1 character")
     private String apartmentCode;
 
-    @Column(name = "newApartmentCode")
-    private String newApartmentCode;
+//    @Column(name = "newApartmentCode")
+//    private String newApartmentCode;
+
     //مكان الشقه
     @Column(name = "locationApartment")
     private String locationApartment;
 
     //تاريخ البيع
     @Column(name = "saleDate")
-    @Future(message = "Date must be in the past or present")
-    private Date saleDate;
+    private LocalDateTime saleDate;
     //الشراء
     @Column(name = "purchase")
-    private Double purchaseApartment;
+    private double purchaseApartment;
 
     //مصاريف الشقه
     @Column(name = "expenses")
-    private Double expenses;
+    private double expenses;
 
-    @Column(name = "totalcost")
-    private Double totalcost;
+    @Column(name = "totalCost")
+    private double  totalCost;
 
     //بيع الشقه
     @Column(name = "amountApartmentSale")
-    private Double amountApartmentSale;
+    private double amountApartmentSale;
 
     //صافى الشقه
     @Column(name = "netOfApartment")
-    private Double netOfApartment;
+    private double netOfApartment;
 
     //ملاحظات
     @Column(name = "comments")
@@ -63,7 +64,8 @@ public class Apartment extends BaseEntity {
     private String status;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "apartment", fetch = FetchType.LAZY)
+//    @OneToMany(mappedBy = "apartment", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "apartment", fetch = FetchType.EAGER)
     @ToString.Exclude
     private List<DetailsApartment> detailsApartments;
 

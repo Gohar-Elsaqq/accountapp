@@ -16,6 +16,6 @@ public interface SystemTypeDOA extends JpaRepository<SystemType,Integer> {
 
     Optional<SystemType> findByLookupType(String lookupType);
 
-    @Query(value = "SELECT * FROM system_type WHERE lookup_type = ?1 AND (?2 IS NULL OR status = ?2)", nativeQuery = true)
+    @Query(value = "SELECT * FROM account.system_type WHERE lookup_type = ?1 AND (?2 IS NULL OR status = ?2)", nativeQuery = true)
      Optional<SystemType> findByLookupTypeAndStatus(String lookupType, String status);
 }

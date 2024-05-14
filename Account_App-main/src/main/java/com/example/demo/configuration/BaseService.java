@@ -10,5 +10,7 @@ import java.io.Serializable;
 @CommonsLog
 public class  BaseService extends BaseDTO implements Serializable {
     public static final String SUCCESS = "Success";
+    public static final String YYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+
 
 }

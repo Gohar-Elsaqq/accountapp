@@ -3,8 +3,10 @@ package com.example.demo.services;
 import com.example.demo.configuration.ApartmentValidationException;
 import com.example.demo.configuration.BaseService;
 import com.example.demo.configuration.Utility;
+import com.example.demo.dao.ApartmentJpaDOA;
 import com.example.demo.dao.DetailsApartmentDAO;
 import com.example.demo.entity.ActApartmentsView;
+import com.example.demo.entity.Apartment;
 import com.example.demo.entity.DetailsApartment;
 import com.example.demo.vaildation.ApartmentsTotalAmountCalculator;
 import com.example.demo.vaildation.DetailsApartmentValidator;
@@ -29,13 +31,15 @@ public class DetailsApartmentService extends BaseService {
     private DetailsApartmentValidator detailsApartmentValidator;
     @Autowired
     private ApartmentsTotalAmountCalculator apartmentsTotalAmountCalculator;
+    @Autowired
+    private ApartmentJpaDOA apartmentDOA;
 
     public void save(DetailsApartment detailsApartment, String apartmentCode, String lookupType) throws Exception {
         try {
             log.info("enter with save");
             detailsApartmentValidator.validateInputs(apartmentCode, lookupType, detailsApartment);
-            apartmentsTotalAmountCalculator.sumAmount(detailsApartment);
             detailsApartmentDAO.save(detailsApartment);
+            apartmentsTotalAmountCalculator.sumAmount(apartmentCode);
             Utility.getGson().toJson(new Utility("Details Apartment", SUCCESS));
         } catch (Exception exception) {
             throw new Exception(exception.getMessage());
@@ -49,12 +53,30 @@ public class DetailsApartmentService extends BaseService {
         }
     }
 
-    public void delete (int id) throws Exception {
+    public void delete(int id) throws Exception {
         try {
             log.info("Start delete Apartment");
+            Optional<DetailsApartment> optionalApartment = detailsApartmentDAO.findById(id);
+
+            if (optionalApartment.isPresent()) {
+                DetailsApartment apartmentDetails = optionalApartment.get();
+                Apartment apartment = apartmentDetails.getApartment();
+                if (apartment != null) {
+                    double amount = apartmentDetails.getAmount();
+                    double newExpenses =apartment.getExpenses() - amount;
+                    apartment.setExpenses(newExpenses);
+                    apartmentDOA.save(apartment);
+                } else {
+                    log.warn("Apartment is null for DetailsApartment with id " + id);
+                }
+            } else {
+                log.warn("DetailsApartment with id " + id + " not found");
+            }
             detailsApartmentValidator.delete(id);
-        } catch (ValidationException e) {
-            throw new ValidationException(e.getMessage());
+
+        } catch (Exception e) {
+            throw new Exception("An error occurred while deleting the apartment: " + e.getMessage());
         }
     }
-}
+
+    }

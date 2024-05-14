@@ -16,17 +16,17 @@ public class DetailsApartment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name="amount")
-    private Double amount;
-//    @Column(name="date")
-//    private Date date;
-    @Column(name="totalcost")
-    private Double totalcost;
+    private double  amount;
+
+    @Column(name="total_cost")
+    private Double  totalCost;
+
     @Column(name="comments")
     private String comments;
     @Column(name="establishing")
-    private boolean establishing;
+    private Boolean establishing ;
     @Column(name="finishing")
-    private boolean finishing;
+    private Boolean finishing;
 
     @JsonIgnore
     @ManyToOne

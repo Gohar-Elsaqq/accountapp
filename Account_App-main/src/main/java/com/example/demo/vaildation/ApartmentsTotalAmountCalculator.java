@@ -1,40 +1,54 @@
 package com.example.demo.vaildation;
 
+import com.example.demo.dao.ApartmentJpaDOA;
 import com.example.demo.dao.DetailsApartmentDAO;
 import com.example.demo.entity.Apartment;
 import com.example.demo.entity.DetailsApartment;
-import com.example.demo.services.ApartmentService;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
+
 @Component
 @CommonsLog
 public class ApartmentsTotalAmountCalculator {
+    @Autowired
+    private ApartmentJpaDOA apartmentJpaDOA;
     @Autowired
     private DetailsApartmentDAO detailsApartmentDAO;
     @Autowired
     private ApartmentValidation apartmentValidation;
 
-    public void sumAmount(DetailsApartment detailsApartment) throws Exception {
+
+    public void sumAmount(String apartmentCode ) throws Exception {
         try {
-             Double amount = detailsApartment.getAmount();
-            String apartmentCode = detailsApartment.getApartment().getApartmentCode();
-            Double lastTotalAmount = getLastTotalAmount(apartmentCode);
-            String currentTotalAmount = (lastTotalAmount != null && lastTotalAmount > 0.0)
-                    ? String.valueOf(lastTotalAmount)
-                    : "0000000000.00";
-            String newTotalAmount = String.valueOf(Double.parseDouble(currentTotalAmount) + amount);
-            detailsApartment.setTotalcost(Double.valueOf(newTotalAmount));
-            apartmentValidation.updateExpensesForApartment(apartmentCode, Double.valueOf(newTotalAmount));
-        } catch (NumberFormatException e) {
-            throw new Exception("Error parsing 'amount' value. Please provide a valid numeric value.", e);
+            if (apartmentCode != null && !apartmentCode.isEmpty()) {
+                Optional<Apartment> apartmentOptional = apartmentJpaDOA.findByApartmentCode(apartmentCode);
+
+                if (apartmentOptional.isPresent()) {
+                    Apartment apartment = apartmentOptional.get();
+                    int apartmentId = apartment.getId();
+
+                    double lastTotalAmount = getLastTotalAmount(apartmentId);
+                    apartmentValidation.updateExpensesForApartment(apartmentCode, lastTotalAmount);
+                    log.info("Successfully updated expenses for Apartment: " + apartmentCode);
+                } else {
+                    throw new IllegalArgumentException("Apartment with code " + apartmentCode + " not found.");
+                }
+            } else {
+                throw new IllegalArgumentException("Apartment code is null or empty.");
+            }
         } catch (Exception e) {
-            throw new RuntimeException("Error in sumAmount", e);
+            throw new Exception("Error in sumAmount", e);
         }
     }
-private Double getLastTotalAmount(String apartmentCode) {
-    Double lastTotalAmount = detailsApartmentDAO.findMaxTotalCostByApartmentCode(apartmentCode);
-        return (lastTotalAmount != null) ? (lastTotalAmount) :0000000000.00;
+
+
+
+    public double getLastTotalAmount(int apartmentId) {
+        return detailsApartmentDAO.getLastTotalAmount(apartmentId);
     }
 }
+
 

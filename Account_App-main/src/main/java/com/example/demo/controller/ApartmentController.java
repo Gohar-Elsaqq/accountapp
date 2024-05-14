@@ -7,7 +7,6 @@ import com.example.demo.entity.Apartment;
 import com.example.demo.services.ApartmentService;
 import jakarta.validation.Valid;
 import lombok.extern.apachecommons.CommonsLog;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +36,8 @@ public class ApartmentController extends BaseController {
         log.info("Rest api to updateApartments ");
         try {
             log.debug("start updateApartments : > >"+ apartmentDto.getApartmentCode());
-            var response =apartmentService.updateApartments(apartmentDto);
-            return success(new Utility("apartment", BaseService.SUCCESS)+response);
+            apartmentService.updateApartments(apartmentDto);
+            return success(new Utility("apartment", BaseService.SUCCESS));
         }catch (Exception exception) {
             return wrapException(exception,exception.getMessage());
         }
@@ -55,17 +54,16 @@ public class ApartmentController extends BaseController {
         }
     }
     @GetMapping(value = "/apartment/allApartment")
-    public List<Apartment> findALL() throws Exception {
+    public List<ApartmentDto> findALL() throws Exception {
       try {
           log.debug("start delete  apartment : >> -- ");
-         return apartmentService.findAllApartment();
-//        return success(new Utility("apartment find all", BaseService.SUCCESS));
+         return apartmentService.findAllApartments();
     }catch (Exception exception) {
       throw new Exception(exception.getMessage());
       }
       }
     @DeleteMapping(value="/apartment/delete/{apartmentCode}")
-    public ResponseEntity<?>  deleteApartment(@PathVariable String apartmentCode) throws Exception {
+    public ResponseEntity<?>  deleteApartment(@PathVariable String apartmentCode) {
         try {
             log.debug("start delete  apartment : >> -- ");
             apartmentService.deleteApartment(apartmentCode);
@@ -75,7 +73,7 @@ public class ApartmentController extends BaseController {
         }
     }
 @PostMapping(value = "/apartment/finishProfit/{apartmentCode}")
-public ResponseEntity<?> finalProfit(@PathVariable String apartmentCode,@RequestParam ("purchaseApartment") Double purchaseApartment, @RequestParam("amountApartmentSale") Double amountApartmentSale) {
+public ResponseEntity<?> finalProfit(@PathVariable String apartmentCode,@RequestParam ("purchaseApartment") double purchaseApartment, @RequestParam("amountApartmentSale") double amountApartmentSale) {
     log.info("Rest API to Final Profit for Apartment: " + apartmentCode);
     try {
         apartmentService.finalProfit(apartmentCode, purchaseApartment,amountApartmentSale);
