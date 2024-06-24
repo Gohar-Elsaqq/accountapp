@@ -17,7 +17,6 @@ public  final class Utility extends BaseDTO implements Serializable {
     private String status;
     private String description;
     private String errorCode;
-    private String errorMessage;
     public Utility() {
 
     }

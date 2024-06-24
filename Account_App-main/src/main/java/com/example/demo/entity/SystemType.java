@@ -6,17 +6,11 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import java.util.List;
 import jakarta.persistence.*;
-import org.hibernate.annotations.MapKeyType;
-import org.hibernate.annotations.Type;
-import org.mapstruct.ValueMapping;
 
-@Getter
-@Setter
+
 @Entity
 @Table(name="systemType")
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
+@Data
 public class SystemType extends  BaseEntity{
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)

@@ -1,9 +1,8 @@
 package com.example.demo.vaildation;
 
-import com.example.demo.dao.ApartmentJpaDOA;
+import com.example.demo.dao.ApartmentDOA;
 import com.example.demo.dao.DetailsApartmentDAO;
 import com.example.demo.entity.Apartment;
-import com.example.demo.entity.DetailsApartment;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,7 @@ import java.util.Optional;
 @CommonsLog
 public class ApartmentsTotalAmountCalculator {
     @Autowired
-    private ApartmentJpaDOA apartmentJpaDOA;
+    private ApartmentDOA apartmentJpaDOA;
     @Autowired
     private DetailsApartmentDAO detailsApartmentDAO;
     @Autowired
@@ -30,15 +29,14 @@ public class ApartmentsTotalAmountCalculator {
                     Apartment apartment = apartmentOptional.get();
                     int apartmentId = apartment.getId();
 
-                    double lastTotalAmount = getLastTotalAmount(apartmentId);
-                    apartmentValidation.updateExpensesForApartment(apartmentCode, lastTotalAmount);
+                    double newExpenses = getLastTotalAmount(apartmentId);
+                    apartmentValidation.updateExpensesForApartment(apartmentCode, newExpenses);
                     log.info("Successfully updated expenses for Apartment: " + apartmentCode);
                 } else {
                     throw new IllegalArgumentException("Apartment with code " + apartmentCode + " not found.");
                 }
-            } else {
-                throw new IllegalArgumentException("Apartment code is null or empty.");
             }
+
         } catch (Exception e) {
             throw new Exception("Error in sumAmount", e);
         }

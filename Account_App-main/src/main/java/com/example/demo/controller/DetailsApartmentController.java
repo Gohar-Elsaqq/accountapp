@@ -3,8 +3,8 @@ package com.example.demo.controller;
 import com.example.demo.configuration.BaseService;
 import com.example.demo.configuration.Utility;
 import com.example.demo.configurationController.BaseController;
-import com.example.demo.entity.ActApartmentsView;
-import com.example.demo.entity.DetailsApartment;
+import com.example.demo.dto.DetailsApartmentDto;
+import com.example.demo.dto.DetailsApartmentDtoSql;
 import com.example.demo.services.DetailsApartmentService;
 import jakarta.validation.ValidationException;
 import lombok.extern.apachecommons.CommonsLog;
@@ -18,25 +18,26 @@ public class DetailsApartmentController extends BaseController {
     @Autowired
     private DetailsApartmentService detailsApartmentService;
     @PostMapping(value = "/detailsApartment/save")
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> saveDetailsApartment(@RequestParam("apartmentCode") String apartmentCode,
-                                                  @RequestBody DetailsApartment detailsApartment,
-                                                  @RequestParam(value = "lookupType") String lookupType) throws Exception {
+    public ResponseEntity<?> saveDetailsApartment(@RequestBody DetailsApartmentDto detailsApartmentDto){
         log.info("Start saveDetailsApartment add >: ");
         try {
-            log.info("Please enter saveDetailsApartment "+apartmentCode+"^_^"+lookupType);
-             detailsApartmentService.save(detailsApartment,apartmentCode,lookupType);
+            log.info("Please enter saveDetailsApartment " );
+             detailsApartmentService.save(detailsApartmentDto);
             return success(new Utility("Details Apartment", BaseService.SUCCESS));
         } catch (Exception exception) {
             return wrapException(exception,exception.getMessage());
         }
     }
     @GetMapping(value = "/detailsApartment/searchApartment")
-    public List<ActApartmentsView> searchOneApartment(@RequestParam("apartmentCode") String apartmentCode) throws ValidationException {
+    public  List<DetailsApartmentDtoSql> searchOneApartment(@RequestParam("apartmentCode") String apartmentCode)throws Exception {
         try {
-            return detailsApartmentService.getDetails(apartmentCode);
-        }catch (ValidationException e) {
-        throw new ValidationException(e.getMessage());
+            List<DetailsApartmentDtoSql> apartmentsViews = detailsApartmentService.getDetails(apartmentCode);
+            if (apartmentsViews.isEmpty()) {
+               throw new Exception("No apartments found for the provided code.");
+            }
+            return apartmentsViews;
+        } catch (ValidationException e) {
+           throw new Exception(e.getMessage());
         }
     }
     @DeleteMapping(value="/detailsApartment/delete/{id}")

@@ -1,15 +1,17 @@
 package com.example.demo.services;
 
 
+import com.example.demo.configuration.ApartmentValidationException;
 import com.example.demo.configuration.BaseService;
+import com.example.demo.dao.SystemTypeDOA;
 import com.example.demo.dto.SystemTypeDto;
 import com.example.demo.entity.SystemType;
 import com.example.demo.vaildation.SystemTypeValidation;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ValidationException;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -19,6 +21,8 @@ public class SystemTypeService extends BaseService {
 
     @Autowired
     private SystemTypeValidation systemTypeValidation;
+    @Autowired
+    private SystemTypeDOA systemTypeDOA;
 
     public SystemType searchLookupType(String lookupType) throws Exception {
         log.info("Start search lookupType");
@@ -28,6 +32,11 @@ public class SystemTypeService extends BaseService {
             throw new Exception(e.getMessage());
         }
     }
+    public SystemType  getLookupTypeCode(String lookupTypeCode) {
+        return systemTypeDOA.findByLookupType(lookupTypeCode)
+                .orElseThrow(() -> new EntityNotFoundException("SystemType not found with lookupTypeCode: " + lookupTypeCode));
+    }
+
 
     public List<SystemType> getAllLookupType(){
         try {
@@ -55,6 +64,14 @@ public class SystemTypeService extends BaseService {
             log.info("this is save systemType");
         } catch (Exception e) {
             throw new Exception(e.getMessage());
+        }
+    }
+    public List<String>  findAllActiveName() throws Exception {
+        log.info("Start getApartment >>>>: get Apartment by code  and status :)> ");
+        try {
+            return systemTypeDOA.findAllActiveName();
+        } catch (Exception e) {
+            throw new ApartmentValidationException(e.getMessage(), "");
         }
     }
 }

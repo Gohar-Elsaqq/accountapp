@@ -17,10 +17,6 @@ public class DetailsApartment extends BaseEntity {
     private int id;
     @Column(name="amount")
     private double  amount;
-
-    @Column(name="total_cost")
-    private Double  totalCost;
-
     @Column(name="comments")
     private String comments;
     @Column(name="establishing")
@@ -32,6 +28,7 @@ public class DetailsApartment extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "apartment_id")
     private Apartment apartment;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "system_type_id")

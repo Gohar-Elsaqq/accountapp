@@ -43,8 +43,16 @@ public class SystemTypeController extends BaseController {
         try {
            return systemTypeService.getAllLookupType();
         } catch (Exception e) {
-           throw new ApartmentValidationException(e.getMessage());
+           throw new ApartmentValidationException(e.getMessage(), "");
         }
     }
-
+    @GetMapping(value = "/systemType/findAllActiveName")
+    public List<String> findAllActiveName() throws Exception {
+        try {
+            log.debug("start delete  apartment : >> -- ");
+            return systemTypeService.findAllActiveName();
+        } catch (Exception exception) {
+            throw new Exception(exception.getMessage());
+        }
+    }
 }

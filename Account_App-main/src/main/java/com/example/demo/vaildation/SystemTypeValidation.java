@@ -3,17 +3,13 @@ package com.example.demo.vaildation;
 import com.example.demo.configuration.ApartmentValidationException;
 import com.example.demo.dao.SystemTypeDOA;
 import com.example.demo.dto.SystemTypeDto;
-import com.example.demo.entity.Apartment;
 import com.example.demo.entity.SystemType;
 import com.example.demo.enums.Status;
 import jakarta.validation.ValidationException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 @Component
@@ -33,13 +29,13 @@ public class SystemTypeValidation {
              systemType=optionalSystemType.get();
              return systemType;
         }
-        throw new ApartmentValidationException("SystemType with lookup type : > " + lookupType + " < : not found");
+        throw new ApartmentValidationException("SystemType with lookup type : > " + lookupType + " < : not found", "");
     }
 
     //find all SystemType
     public List<SystemType> findAll() {
         try {
-            return systemTypeDOA.findAll();
+            return systemTypeDOA.findAllActiveSystemType();
         } catch (ValidationException exception) {
             throw new ValidationException("An error was found in returning data. Try again");
         }
@@ -52,9 +48,9 @@ public class SystemTypeValidation {
                 throw new Exception("Invalid apartment code");
             }
             SystemType systemType = systemTypeDOA.findByLookupType(lookupType)
-                    .orElseThrow(() -> new ApartmentValidationException("not found "));
+                    .orElseThrow(() -> new ApartmentValidationException("not found ", ""));
             if (systemType != null && Status.SUSPEND.name().equals(systemType.getStatus())) {
-                throw new ApartmentValidationException("Apartment is already deleted: " + lookupType);
+                throw new ApartmentValidationException("lookupType is already deleted: " + lookupType, "");
             }
             assert systemType != null;
             systemType.setStatus(String.valueOf(Status.SUSPEND));
@@ -81,7 +77,7 @@ public class SystemTypeValidation {
 
     public void checkIfSystemTypeExists(String lookupType) throws ApartmentValidationException {
         if (systemTypeDOA.findByLookupType(lookupType).isPresent()) {
-            throw new ApartmentValidationException("An lookupType with this code already exists");
+            throw new ApartmentValidationException("An lookupType with this code already exists", "");
         }
     }
 
@@ -92,4 +88,5 @@ public class SystemTypeValidation {
             throw new ValidationException("don't set Status ");
         }
     }
+
 }
