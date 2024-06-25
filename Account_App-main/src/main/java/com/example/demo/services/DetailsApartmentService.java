@@ -3,7 +3,6 @@ package com.example.demo.services;
 import com.example.demo.configuration.ApartmentValidationException;
 import com.example.demo.configuration.BaseService;
 import com.example.demo.configuration.Utility;
-import com.example.demo.dao.ApartmentDOA;
 import com.example.demo.dao.DetailsApartmentDAO;
 import com.example.demo.dto.DetailsApartmentDto;
 import com.example.demo.dto.DetailsApartmentDtoSql;
@@ -18,12 +17,8 @@ import jakarta.validation.ValidationException;
 import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
-
-
 @Service
 @CommonsLog
 public class DetailsApartmentService extends BaseService {
@@ -34,8 +29,6 @@ public class DetailsApartmentService extends BaseService {
     private DetailsApartmentValidator detailsApartmentValidator;
     @Autowired
     private ApartmentsTotalAmountCalculator apartmentsTotalAmountCalculator;
-    @Autowired
-    private ApartmentDOA apartmentDOA;
     @Autowired
     private ApartmentService apartmentService;
     @Autowired
@@ -76,13 +69,11 @@ public class DetailsApartmentService extends BaseService {
         try {
             log.info("Start delete Apartment");
             Optional<DetailsApartment> optionalApartment = detailsApartmentDAO.findById(id);
-
             if (optionalApartment.isPresent()) {
                 DetailsApartment apartmentDetails = optionalApartment.get();
                 Apartment apartment = apartmentDetails.getApartment();
                 if (apartment != null) {
                     double newExpenses = apartment.getExpenses() - apartmentDetails.getAmount();
-
                     if (newExpenses <=0) {
                         apartment.setExpenses(0);
                     }else {
@@ -90,10 +81,8 @@ public class DetailsApartmentService extends BaseService {
                     }
                     double total = apartment.getTotalCost()- apartmentDetails.getAmount();
                     apartment.setTotalCost(total);
-//                    apartmentDOA.save(apartment);
                     apartmentValidation.updateExpensesForApartment(apartment.getApartmentCode(), newExpenses);
                     detailsApartmentDAO.deleteById(id);
-
                 }
             }
         } catch (Exception e) {

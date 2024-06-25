@@ -41,9 +41,6 @@ public class ApartmentsTotalAmountCalculator {
             throw new Exception("Error in sumAmount", e);
         }
     }
-
-
-
     public double getLastTotalAmount(int apartmentId) {
         return detailsApartmentDAO.getLastTotalAmount(apartmentId);
     }

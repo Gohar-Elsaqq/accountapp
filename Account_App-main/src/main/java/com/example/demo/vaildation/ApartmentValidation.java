@@ -13,7 +13,6 @@ import lombok.extern.apachecommons.CommonsLog;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 @Component
@@ -45,12 +44,10 @@ public class ApartmentValidation {
             throw new ApartmentValidationException("Invalid or empty  purchaseApartment", "");
         }
     }
-
     public Apartment mapDtoToEntity(ApartmentDto apartmentDto) {
 
         return modelMapper.map(apartmentDto, Apartment.class);
     }
-
     public void setApartmentDefaults(Apartment apartment) {
         apartment.setStatus(String.valueOf(Status.ACT));
     }
@@ -66,14 +63,6 @@ public class ApartmentValidation {
             throw new ValidationException("Apartment with code : > " + apartmentCode + " < : not found");
         }
     }
-//    public Optional<Apartment> validateApartmentId(String apartmentCode) throws ValidationException {
-//        if (apartmentCode == null || apartmentCode.trim().isEmpty()) {
-//            throw new ValidationException("Invalid or empty apartment code");
-//        }
-//        String optionalApartment = apartmentDOA.findAllApartmentsName(apartmentCode);
-//        return apartmentDOA.findById(optionalApartment.get().getId());
-//    }
-
     public void delete(String apartmentCode) throws Exception {
         if (apartmentCode == null) {
             throw new Exception("Invalid apartment code");
@@ -86,53 +75,7 @@ public class ApartmentValidation {
         existingApartment.setStatus(String.valueOf(Status.SUSPEND));
         apartmentDOA.save(existingApartment);
     }
-
     @Transactional
-//    public void updateExpensesForApartment(String apartmentCode, double newExpenses) throws ApartmentValidationException {
-//        try {
-//            log.info("start updating");
-//            Optional<Apartment> optionalApartment = apartmentDOA.findByApartmentCode(apartmentCode);
-//            if (optionalApartment.isPresent()) {
-//                Apartment apartment = optionalApartment.get();
-//                apartment.setExpenses(newExpenses);
-//                double totalInvestedAmount = 0;
-//                for (Contributor contributor : apartment.getContributor()) {
-//                    totalInvestedAmount += contributor.getAmountInvested();
-//                }
-//                if (totalInvestedAmount > 0) {
-//                    for (Contributor contributor : apartment.getContributor()) {
-//                        double sharePercentage = contributor.getAmountInvested() / totalInvestedAmount;
-//                        double expensesForContributor = newExpenses * sharePercentage;
-//                        contributor.setShareholdersExpenses(expensesForContributor);
-//                    }
-//                } else {
-//                    for (Contributor contributor : apartment.getContributor()) {
-//                        contributor.setShareholdersExpenses(0.0);
-//                    }
-//                }
-//                double totalSaleAmount = apartment.getNetOfApartment();
-//                if (totalInvestedAmount > 0) {
-//                    for (Contributor contributor : apartment.getContributor()) {
-//                        double sharePercentage = contributor.getAmountInvested() / totalInvestedAmount;
-//                        double profitForContributor = totalSaleAmount * sharePercentage;
-//                        contributor.setShareholdersProfits(profitForContributor);
-//                        double endData = contributor.getShareholdersProfits() - contributor.getShareholdersExpenses();
-//                        contributor.setEndData(endData);
-//                    }
-//                } else {
-//
-//                    for (Contributor contributor : apartment.getContributor()) {
-//                        contributor.setShareholdersProfits(0.0);
-//                        contributor.setEndData(0.0);
-//                    }
-//                }
-//                apartmentDOA.save(apartment);
-//            }
-//            log.info("Successfully updated expenses and profits for Apartment: " + apartmentCode);
-//        } catch (Exception e) {
-//            throw new ApartmentValidationException("An error occurred while updating expenses and profits: " + e.getMessage(), "");
-//        }
-//    }
     public void updateExpensesForApartment(String apartmentCode, double newExpenses) throws ApartmentValidationException {
         try {
             log.info("start updating");
